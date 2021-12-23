@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ncf_manager_account_invoice_form" model="ir.ui.view">
+        <field name="name">ncf manager account invoice form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!--button name="action_invoice_sent" position="attributes">
+                <attribute name="attrs"></attribute>
+                <attribute name="icon">fa-paper-plane</attribute>
+            </button-->
+
+
+
+            <xpath expr="/form/div[hasclass('alert')]" position="after">
+                 <field name="sequence_almost_depleted" invisible="1"/>
+                <div groups="account.group_account_move" class="alert alert-info" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('sequence_almost_depleted','=',False)]}">
+                    Los comprobantes de este tipo están por agotarse
+                </div>
+            </xpath>
+
+
+            <form>
+                <field name="ncf_control" invisible="1"/>
+                <field name="is_company_currency" invisible="1"/>
+            </form>
+            <xpath expr="//button[@name='action_reverse']" position="attributes">
+                <attribute name="string">Aplicar NC o ND</attribute>
+            </xpath>
+
+            <!--xpath expr="//button[@name='action_invoice_cancel']" position="replace">
+                <button name="%(ncf_manager.action_account_invoice_cancel)d" type='action'
+                        string="Cancelar Factura"
+                        states="proforma2,open" groups="account.group_account_user"/>
+            </xpath-->
+            <xpath expr="//field[@name='partner_id']" position="after">
+              <field name="reference" string="NCF" readonly="1"/>
+            </xpath>
+
+            <field name="partner_id" position="after">
+                <field name="sale_fiscal_type" />
+                <field name="income_type" />
+                <field name="reference" string="NCF" readonly="1" attrs="{
+                       'invisible': ['|', '|', ('state', '=', 'draft'), ('reference', '=', False), ('ncf_control','=',False)],
+                       'readonly': True}"/>
+                <field name="origin_out" groups="base.group_user" />
+            </field>
+
+            <xpath expr="//h1" position="after">
+                <h4 attrs="{'invisible':[('state','!=','cancel')]}">
+                    Razón de Cancelación:<br/><field name="anulation_type" readonly="1"/>
+                </h4>
+            </xpath>
+
+            <!--xpath expr="//page[@name='other_info']//field[@name='origin']" position="replace"/-->
+
+            <!--field name="move_id" position="before">
+                <field name="origin" groups="base.group_user" attrs="{'invisible': [('type', '=', 'out_refund')]}"/>
+            </field-->
+
+        </field>
+    </record>
+</odoo>
